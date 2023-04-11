@@ -9,8 +9,19 @@ canva.height = window.innerHeight;
 let tailleCube = 48;
 let grille = [20, 16];
 
+let casesSpeciales = {
+    'baseDeChargement': [[2, 19], [13, 19]],
+    'stationDeChargement': [[7, 11], [8, 11]],
+    'fileAttenteChargement': [[1, 17], [1, 18], [1, 19], [2, 19], [3, 19], [4, 19], [14, 17], [14, 18], [14, 19], [13, 19], [12, 19], [11, 19], [4, 18], [11, 18]]
+}
+
 function baseDeChargement(x, y){
-    return x == 2 && y == 19 || x == 13 && y == 19;
+    for(let element of casesSpeciales.baseDeChargement){
+        if(element[0] == x && element[1] == y){
+            console.log('base de chargement');  
+        return true;
+        }
+    };
 }
 
 function stationDeChargement(x, y){
@@ -22,42 +33,45 @@ function fileAttenteChargement(x, y){
 }
 
 //draw grid
-for(let i = 0; i < grille[1]; i++){
-    for(let j = 0; j < grille[0]; j++){
-        ctx.beginPath();
-        ctx.rect(i * tailleCube, j * tailleCube, tailleCube, tailleCube);
-        if(i == 0 && j>0 && j<grille[0]-3 || i == grille[1]-1 && j>0 && j<grille[0]-3 || j == 0 && i>0 && i<5 || j == 0 && i>grille[1]-6 && i<grille[1]-1 || i == 5 && j>0 && j<grille[0]-10 || i == grille[1]-6 && j>0 && j<grille[0]-10){
-            ctx.fillStyle = 'grey';
-            ctx.fill();
-        }else if(j == grille[0]-10 && i > 4 && i <= grille[1]-6){
-            ctx.fillStyle = 'black';
-            ctx.fill();
-
-        }else if(i > 0 && i < 5 && j > 0 && j < grille[0]-9 || i > grille[1]-6 && i < grille[1]-1 && j > 0 && j < grille[0]-9 || j >10 && j < grille[0] && i > 0 && i < grille[1]-1){
-            ctx.fillStyle = 'cyan';
-            ctx.fill();
-        }
-
-        if(baseDeChargement(i, j)){
-            ctx.fillStyle = 'red';
-            ctx.fill();
-        }
-
-        if(stationDeChargement(i, j)){
-            ctx.fillStyle = 'yellow';
-            ctx.fill();
-        }
-
-        if(fileAttenteChargement(i, j)){
-            ctx.fillStyle = 'blue';
-            ctx.fill();
-        }
-
-        ctx.strokeStyle = '#333';
-        ctx.stroke();
-        ctx.closePath();
-    } 
+function drawGrid(){
+    for(let i = 0; i < grille[1]; i++){
+        for(let j = 0; j < grille[0]; j++){
+            ctx.beginPath();
+            ctx.rect(i * tailleCube, j * tailleCube, tailleCube, tailleCube);
+            if(i == 0 && j>0 && j<grille[0]-3 || i == grille[1]-1 && j>0 && j<grille[0]-3 || j == 0 && i>0 && i<5 || j == 0 && i>grille[1]-6 && i<grille[1]-1 || i == 5 && j>0 && j<grille[0]-10 || i == grille[1]-6 && j>0 && j<grille[0]-10){
+                ctx.fillStyle = 'grey';
+                ctx.fill();
+            }else if(j == grille[0]-10 && i > 4 && i <= grille[1]-6){
+                ctx.fillStyle = 'black';
+                ctx.fill();
+    
+            }else if(i > 0 && i < 5 && j > 0 && j < grille[0]-9 || i > grille[1]-6 && i < grille[1]-1 && j > 0 && j < grille[0]-9 || j >10 && j < grille[0] && i > 0 && i < grille[1]-1){
+                ctx.fillStyle = 'cyan';
+                ctx.fill();
+            }
+    
+            if(baseDeChargement(i, j)){
+                ctx.fillStyle = 'red';
+                ctx.fill();
+            }
+    
+            if(stationDeChargement(i, j)){
+                ctx.fillStyle = 'yellow';
+                ctx.fill();
+            }
+    
+            if(fileAttenteChargement(i, j)){
+                ctx.fillStyle = 'blue';
+                ctx.fill();
+            }
+    
+            ctx.strokeStyle = '#333';
+            ctx.stroke();
+            ctx.closePath();
+        } 
+    }
 }
+
 
 class Robot{
 
@@ -83,7 +97,32 @@ class Robot{
         ctx.stroke();
         ctx.closePath();
     }
+
+    up(){
+        this.y--;
+        this.draw();
+    }
+
+    down(){
+        this.y++;
+        this.draw();
+    }
+
+    left(){
+        this.x--;
+        this.draw();
+    }
+
+    right(){
+        this.x++;
+        this.draw();
+    }
+
 }
 
 let robot = new Robot(11, 12, Math.PI*2);
 robot.draw();
+drawGrid();
+
+let instructions = [robot.right(), robot.down(), robot.left(), robot.up()];
+
